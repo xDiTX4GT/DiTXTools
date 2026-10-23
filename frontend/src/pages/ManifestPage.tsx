@@ -26,7 +26,7 @@ export function formatUtcTimestamp(timestamp: string): string {
 type ManifestSource = 'hubcap' | 'manifesthub1' | 'sushi' | 'ryuu' | 'yaszz';
 type SearchMode = 'title' | 'appid';
 
-const HIDDEN_SOURCE_OPTIONS = new Set<ManifestSource>(['manifesthub1', 'yaszz','sushi']);
+const HIDDEN_SOURCE_OPTIONS = new Set<ManifestSource>(['manifesthub1', 'ryuu', 'sushi']);
 
 interface Game {
   game_name?: string;
@@ -89,7 +89,7 @@ function unavailableManifestMessage(currentSource: ManifestSource): string {
     case 'ryuu':
       return 'Manifest not available from TanJungHoo. Try another source; Ex: Hubcap.';
     case 'yaszz':
-      return 'Manifest not available from Yaszz. Try another source; Ex: Hubcap.';
+      return 'Manifest not available from WoWo. Try another source; Ex: Hubcap.';
     case 'manifesthub1':
       return 'Invalid API key or manifest not available from DaRwiN. Try another source; Ex: Hubcap.';
     case 'hubcap':
@@ -128,7 +128,7 @@ const manifestCache: Partial<{
 export default function ManifestPage() {
   const [query, setQuery] = useState(() => manifestCache.query ?? '');
   const [searchMode, setSearchMode] = useState<SearchMode>(() => manifestCache.searchMode ?? 'title');
-  const [source, setSource] = useState<ManifestSource>(() => manifestCache.source ?? 'ryuu');
+  const [source, setSource] = useState<ManifestSource>(() => manifestCache.source ?? 'yaszz');
   const [licenseToken, setLicenseToken] = useState(() => manifestCache.licenseToken ?? '');
   const [manifestHubApiKey, setManifestHubApiKey] = useState(() => manifestCache.manifestHubApiKey ?? '');
   const [tokenModalOpen, setTokenModalOpen] = useState(false);
@@ -445,10 +445,10 @@ export default function ManifestPage() {
     requestText: 'Requesting manifest from EkOp…',
   },
   hubcap: {
-    name: 'Melvinz',
+    name: 'Jeffrey',
     description:
-      'Melvinz is a source manifest with 99.9% Game & DLC availability, but it requires an access token.',
-    requestText: 'Requesting manifest from Melvinz…',
+      'Jeffrey is a source manifest with 99.9% Game & DLC availability, but it requires an access token.',
+    requestText: 'Requesting manifest from Jeffrey…',
   },
   manifesthub1: {
     name: 'DaRwiN',
@@ -459,14 +459,14 @@ export default function ManifestPage() {
   ryuu: {
     name: 'TanJungHoo',
     description:
-      'TanJungHoo is a free manifest source that provides the latest game updates and DLC, but not as complete as Melvinz.',
+      'TanJungHoo is a free manifest source that provides the latest game updates and DLC, but not as complete as Jeffrey.',
     requestText: 'Requesting manifest from TanJungHoo…',
   },
   yaszz: {
-    name: 'Yaszz',
+    name: 'WoWo',
     description:
-      'Yaszz is a free manifest source, just like TanJungHoo',
-    requestText: 'Requesting manifest from Yaszz…',
+      'WoWo is a free manifest source',
+    requestText: 'Requesting manifest from WoWo…',
   },
 } as const;
 
@@ -519,8 +519,8 @@ export default function ManifestPage() {
               },
               {
                 value: 'yaszz' as const,
-                title: 'Yaszz',
-                subtitle: 'Alternative source',
+                title: 'WoWo',
+                subtitle: 'Free source',
               },
               {
                 value: 'manifesthub1' as const,
@@ -529,7 +529,7 @@ export default function ManifestPage() {
               },
               {
                 value: 'hubcap' as const,
-                title: 'Melvinz',
+                title: 'Jeffrey',
                 subtitle: 'Need token (Best)',
               },
       
@@ -1009,13 +1009,13 @@ export default function ManifestPage() {
                   textTransform: 'uppercase',
                   marginBottom: 12,
                 }}>
-                  Melvinz Access
+                  Jeffrey Access
                 </div>
                 <h3 id="hubcap-token-title" style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>
                   Insert Token
                 </h3>
                 <p style={{ marginTop: 8, fontSize: 13, lineHeight: 1.6, color: '#9CA3AF' }}>
-                  Melvinz is a source manifest with 99.9% Game & DLC availability, but it requires an access token. Insert a token to use Melvinz. Tokens can be obtained by making a request on Discord.
+                  Jeffrey is a source manifest with 99.9% Game & DLC availability, but it requires an access token. Insert a token to use Jeffrey. Tokens can be obtained by making a request on Discord.
                 </p>
               </div>
               <button
