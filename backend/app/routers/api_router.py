@@ -24,7 +24,23 @@ router = APIRouter(
     tags=["API"],
 )
 
+@router.get("/health")
+async def health_proxy():
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get("https://hubcapmanifest.com/api/v1/health")
 
+        return JSONResponse(
+            content=response.json(),
+            status_code=response.status_code,
+        )
+
+    except httpx.RequestError as e:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Failed to connect to upstream API: {str(e)}"
+        )
+    
 @router.post("/token/validate")
 @limiter.limit("10/minute")
 async def validate_hubcap_token(

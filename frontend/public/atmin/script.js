@@ -1,4 +1,4 @@
-const API_BASE = "https://api-ditxtools.up.railway.app";
+const API_BASE = "https://ditxtools.vercel.app/api";
 
 const AUTH_KEY = "dit_admin_key";
 const AUTH_USER = "dit_admin_username";

@@ -1,5 +1,5 @@
 import httpx
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
@@ -37,35 +37,9 @@ app.add_middleware(
 
 app.mount("/static", StaticFiles(directory=f"{BASE_DIR}/static"), name="static")
 
-
-@app.get("/")
-def root():
-    return FileResponse(f"{BASE_DIR}/templates/api.html")
-
 @app.get("/favicon.ico")
 def favicon():
     return FileResponse(f"{BASE_DIR}/static/favicon.ico")
-
-@app.get("/admin")
-def admin_panel():
-    return FileResponse(f"{BASE_DIR}/templates/admin.html")
-
-@app.get("/health")
-async def health_proxy():
-    try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            response = await client.get("https://hubcapmanifest.com/api/v1/health")
-
-        return JSONResponse(
-            content=response.json(),
-            status_code=response.status_code,
-        )
-
-    except httpx.RequestError as e:
-        raise HTTPException(
-            status_code=502,
-            detail=f"Failed to connect to upstream API: {str(e)}"
-        )
     
 app.include_router(admin_router)
 

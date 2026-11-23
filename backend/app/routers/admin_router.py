@@ -43,7 +43,7 @@ from app.dependencies import verify_admin_key
 from app.config import ADMIN_API_KEY
 
 router = APIRouter(
-    prefix="/admin",
+    prefix="/api/admin",
     tags=["Admin"],
 )
 
