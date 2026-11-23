@@ -24,7 +24,7 @@ export default function App() {
 
 return (
     <>
-      {currentPage === 'atmin' ? (
+      {currentPage === 'admin' ? (
         <Admin />
       ) : currentPage === 'health' ? (
         <Api />
