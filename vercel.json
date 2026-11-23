@@ -18,6 +18,14 @@
       }
     },
     {
+      "source": "/atmin/(.*)",
+      "destination": "https://ditxtools.vercel.app/atmin/$1"
+    },
+    {
+      "source": "/health",
+      "destination": "https://ditxtools.vercel.app/api/health"
+    },
+    {
       "source": "/(.*)",
       "destination": {
         "service": "frontend"
