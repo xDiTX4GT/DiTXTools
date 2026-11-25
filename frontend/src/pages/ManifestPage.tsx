@@ -465,10 +465,10 @@ export default function ManifestPage() {
     requestText: 'Requesting manifest from TanJungHoo…',
   },
   ryuu2: {
-    name: 'Ryuu2',
+    name: 'Jarwis',
     description:
       'Jarwis is a free manifest source that provides the latest game updates and DLC, but not as complete as Jeffrey.',
-    requestText: 'Requesting manifest from Ryuu2…',
+    requestText: 'Requesting manifest from Jarwis…',
   },
   yaszz: {
     name: 'WoWo',
