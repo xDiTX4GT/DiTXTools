@@ -130,7 +130,7 @@ Download manifest game sebagai file ZIP.
 | Field | Tipe | Keterangan |
 |-------|------|------------|
 | `app_id` | `int` | Steam App ID. Wajib. |
-| `source` | `string` | Provider. Opsional, default `hubcap`. Opsi: `hubcap`, `manifesthub1`, `sushi`, `ryuu`, `yaszz`. |
+| `source` | `string` | Provider. Opsional, default `hubcap`. Opsi: `hubcap`, `manifesthub1`, `sushi`, `ryuu`, `ryuu2`, `yaszz`. |
 | `token` | `string` | Wajib jika `source=hubcap`. |
 | `api_key` | `string` | Wajib jika `source=manifesthub1`. |
 
@@ -142,6 +142,7 @@ Download manifest game sebagai file ZIP.
 | `manifesthub1` | API key | Finder API + bundle download |
 | `sushi` | Tidak ada | GitHub raw zip |
 | `ryuu` | Tidak ada | Direct HTTP |
+| `ryuu2` | Cookie (disimpan di Settings) | `generator.ryuu.lol/download` |
 | `yaszz` | Tidak ada | GitHub archive download |
 
 **Flow untuk `hubcap`:**

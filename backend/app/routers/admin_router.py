@@ -20,6 +20,8 @@ from app.schemas import (
     BotSettingsUpdate,
     HubcapApiKeyResponse,
     HubcapApiKeyUpdateRequest,
+    Ryuu2CookieResponse,
+    Ryuu2CookieUpdateRequest,
     TokenResponse,
     TokenListResponse,
     TokenListItem,
@@ -30,17 +32,23 @@ from app.services.settings_service import (
     DISCORD_GUILD_ID_SETTING,
     DISCORD_MANIFEST_ALLOWED_CHANNELS_SETTING,
     HUBCAP_API_KEY_SETTING,
+    RYUU2_COOKIE_SETTING,
     get_discord_allowed_channels,
     get_discord_config,
     get_discord_manifest_allowed_channels,
     get_hubcap_api_key,
+    get_ryuu2_cookie,
     get_setting,
     set_setting,
 )
 from app.services.discord_service import verify_discord_connection
 from app.utils import generate_token
 from app.dependencies import verify_admin_key
-from app.config import ADMIN_API_KEY
+from app.config import (
+    ADMIN_API_KEY,
+    RYUU2_DOWNLOAD_COUNT_URL,
+    RYUU2_USAGE_LIMIT,
+)
 
 router = APIRouter(
     prefix="/api/admin",
@@ -212,6 +220,72 @@ def update_hubcap_api_key_setting(
         masked_value=_mask_secret(setting.value),
         updated_at=setting.updated_at,
     )
+
+
+@router.get("/settings/ryuu2-cookie", response_model=Ryuu2CookieResponse)
+def get_ryuu2_cookie_setting(
+    db: Session = Depends(get_db),
+    _: None = Depends(verify_admin_key),
+):
+    setting = get_setting(db, RYUU2_COOKIE_SETTING)
+    value = get_ryuu2_cookie(db)
+
+    return Ryuu2CookieResponse(
+        configured=bool(value),
+        masked_value=_mask_secret(value),
+        updated_at=setting.updated_at if setting else None,
+    )
+
+
+@router.put("/settings/ryuu2-cookie", response_model=Ryuu2CookieResponse)
+def update_ryuu2_cookie_setting(
+    data: Ryuu2CookieUpdateRequest,
+    db: Session = Depends(get_db),
+    _: None = Depends(verify_admin_key),
+):
+    cookie = data.cookie.strip()
+    if not cookie:
+        raise HTTPException(status_code=400, detail="Ryuu2 cookie is required.")
+
+    setting = set_setting(db, RYUU2_COOKIE_SETTING, cookie)
+
+    return Ryuu2CookieResponse(
+        configured=True,
+        masked_value=_mask_secret(setting.value),
+        updated_at=setting.updated_at,
+    )
+
+
+@router.get("/ryuu2-usage")
+async def get_ryuu2_usage(
+    _: None = Depends(verify_admin_key),
+):
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.get(RYUU2_DOWNLOAD_COUNT_URL)
+
+        response.raise_for_status()
+        data = response.json()
+    except httpx.HTTPStatusError:
+        raise HTTPException(
+            status_code=502,
+            detail="Failed to fetch Ryuu2 usage.",
+        )
+    except (httpx.RequestError, ValueError):
+        raise HTTPException(
+            status_code=502,
+            detail="Failed to fetch Ryuu2 usage.",
+        )
+
+    count = int(data.get("count") or 0)
+    reset_in_seconds = int(data.get("reset_in_seconds") or 0)
+
+    return {
+        "count": count,
+        "limit": RYUU2_USAGE_LIMIT,
+        "remaining": max(RYUU2_USAGE_LIMIT - count, 0),
+        "reset_in_seconds": reset_in_seconds,
+    }
 
 
 @router.get("/userstats")

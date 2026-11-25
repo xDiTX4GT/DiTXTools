@@ -52,6 +52,13 @@ MANIFEST_PROVIDERS = {
         "requires": None,
     },
 
+    "ryuu2": {
+        "url": "https://generator.ryuu.lol/download?appid={app_id}&file_type=manifest",
+        "method": "GET",
+        "requires": None,
+        "headers": lambda auth: {},
+    },
+
     "yaszz": {
         "url": "https://codeload.github.com/SSMGAlt/ManifestHub2/zip/refs/heads/{app_id}",
         "method": "GET",
@@ -59,6 +66,17 @@ MANIFEST_PROVIDERS = {
         "headers": lambda auth: {},
     },
 }
+
+RYUU2_USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/120.0.0.0 Safari/537.36"
+)
+RYUU2_REFERER = "https://generator.ryuu.lol"
+RYUU2_DOWNLOAD_COUNT_URL = (
+    "https://generator.ryuu.lol/api/download_count/1191376767169085453"
+)
+RYUU2_USAGE_LIMIT = 50
 
 DISCORD_GUILD_ID: str = os.getenv("DISCORD_GUILD_ID")
 DISCORD_BOT_TOKEN: str = os.getenv("DISCORD_BOT_TOKEN")

@@ -432,6 +432,13 @@ function renderDashboardPage() {
           </div>
           <div id="userstats-box"></div>
         </div>
+
+        <div class="card">
+          <div class="card-title">
+            <h2>Usage Ryuu2 Cookie</h2>
+          </div>
+          <div id="ryuu2-usage-box"></div>
+        </div>
       </div>
     </div>
   `;
@@ -439,13 +446,14 @@ function renderDashboardPage() {
   document.getElementById("refresh-btn").addEventListener("click", () => {
     const btn = document.getElementById("refresh-btn");
     btn.classList.add("spinning");
-    Promise.all([loadHealth(), loadUserStats(), loadTokenStats(), loadActivity()]).finally(() => {
+    Promise.all([loadHealth(), loadUserStats(), loadRyuu2Usage(), loadTokenStats(), loadActivity()]).finally(() => {
       btn.classList.remove("spinning");
     });
   });
 
   loadHealth();
   loadUserStats();
+  loadRyuu2Usage();
   loadTokenStats();
   loadActivity();
 }
@@ -526,6 +534,52 @@ async function loadUserStats() {
       <div class="usage-foot">
         <span>Key used ${s.api_key_usage_count ?? 0}x</span>
         <span>Expire ${s.api_key_expires_at ? formatDate(s.api_key_expires_at) : "—"}</span>
+      </div>
+    `;
+  } catch (err) {
+    box.innerHTML = `<p class="muted" style="font-size:0.85rem;">${escapeHtml(err.message)}</p>`;
+  }
+}
+
+function formatDuration(seconds) {
+  if (!seconds || seconds <= 0) return "Resetting now";
+  const d = Math.floor(seconds / 86400);
+  const h = Math.floor((seconds % 86400) / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  if (d > 0) return `${d}d ${h}h`;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+}
+
+async function loadRyuu2Usage() {
+  const box = document.getElementById("ryuu2-usage-box");
+  box.innerHTML = skeletonRows(3);
+
+  try {
+    const s = await apiFetch("/admin/ryuu2-usage");
+    const d = await apiFetch("/admin/userstats");
+    const limit = s.limit ?? 50;
+    const used = s.count ?? 0;
+    const remaining = s.remaining ?? Math.max(limit - used, 0);
+    const pct = limit > 0 ? Math.min((used / limit) * 100, 100) : 0;
+    const resetAt = new Date(Date.now() + (s.reset_in_seconds || 0) * 1000);
+
+    box.innerHTML = `
+      <div class="usage-meta">
+        <span>${escapeHtml(d.username || "—")}</span>
+        <span class="badge ${remaining > 0 ? "active" : "expired"}">${remaining > 0 ? "Available" : "Exhausted"}</span>
+      </div>
+      <div class="usage-bar-track">
+        <div class="usage-bar-fill" style="width:${pct}%"></div>
+      </div>
+      <div class="usage-numbers">
+        <div><span class="num">${used}</span><label>Used</label></div>
+        <div><span class="num">${limit}</span><label>Daily limit</label></div>
+        <div><span class="num accent">${remaining}</span><label>Remaining usage</label></div>
+      </div>
+      <div class="usage-foot">
+        <span>Reset ${formatDate(resetAt.toISOString())}</span>
+        <span>In ${formatDuration(s.reset_in_seconds)}</span>
       </div>
     `;
   } catch (err) {
@@ -993,45 +1047,80 @@ function renderSettingsPage() {
   `;
 
   content.innerHTML = `
-    <div class="card settings-card">
-      <div class="card-title">
-        <h2>Hubcap API Key</h2>
-        <span class="badge expired" id="hubcap-key-status">Loading</span>
-      </div>
-
-      <div class="component-row settings-current">
-        <span class="name">Current key</span>
-        <span class="val mono" id="hubcap-key-current">Loading...</span>
-      </div>
-      <div class="component-row settings-current">
-        <span class="name">Last updated</span>
-        <span class="val mono" id="hubcap-key-updated">—</span>
-      </div>
-
-      <form id="hubcap-key-form" class="settings-form" novalidate>
-        <div class="field">
-          <label for="hubcap-api-key">New API key</label>
-          <input type="password" id="hubcap-api-key" autocomplete="off" placeholder="Paste the new Hubcap API key" />
+    <div style="display: grid; gap: 1.5rem; max-width: 720px;">
+      <div class="card settings-card">
+        <div class="card-title">
+          <h2>Hubcap API Key</h2>
+          <span class="badge expired" id="hubcap-key-status">Loading</span>
         </div>
 
-        <button type="submit" class="btn btn-primary" id="hubcap-key-submit">
-          <span class="spinner"></span>
-          <span class="btn-label">Save</span>
-        </button>
-      </form>
+        <div class="component-row settings-current">
+          <span class="name">Current key</span>
+          <span class="val mono" id="hubcap-key-current">Loading...</span>
+        </div>
+        <div class="component-row settings-current">
+          <span class="name">Last updated</span>
+          <span class="val mono" id="hubcap-key-updated">—</span>
+        </div>
+
+        <form id="hubcap-key-form" class="settings-form" novalidate>
+          <div class="field">
+            <label for="hubcap-api-key">New API key</label>
+            <input type="password" id="hubcap-api-key" autocomplete="off" placeholder="Paste the new Hubcap API key" />
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="hubcap-key-submit">
+            <span class="spinner"></span>
+            <span class="btn-label">Save</span>
+          </button>
+        </form>
+      </div>
+
+      <div class="card settings-card">
+        <div class="card-title">
+          <h2>Ryuu2 Cookie</h2>
+          <span class="badge expired" id="ryuu2-cookie-status">Loading</span>
+        </div>
+
+        <div class="component-row settings-current">
+          <span class="name">Current cookie</span>
+          <span class="val mono" id="ryuu2-cookie-current">Loading...</span>
+        </div>
+        <div class="component-row settings-current">
+          <span class="name">Last updated</span>
+          <span class="val mono" id="ryuu2-cookie-updated">—</span>
+        </div>
+
+        <form id="ryuu2-cookie-form" class="settings-form" novalidate>
+          <div class="field">
+            <label for="ryuu2-cookie">New cookie</label>
+            <input type="password" id="ryuu2-cookie" autocomplete="off" placeholder="Paste the full Ryuu2 cookie (e.g. session=...)" />
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="ryuu2-cookie-submit">
+            <span class="spinner"></span>
+            <span class="btn-label">Save</span>
+          </button>
+        </form>
+      </div>
     </div>
   `;
 
   const settingsRefreshBtn = document.getElementById("settings-refresh-btn");
   settingsRefreshBtn.addEventListener("click", () => {
     settingsRefreshBtn.classList.add("spinning");
-    loadHubcapApiKeySetting().finally(() => {
+    Promise.allSettled([
+      loadHubcapApiKeySetting(),
+      loadRyuu2CookieSetting(),
+    ]).finally(() => {
       settingsRefreshBtn.classList.remove("spinning");
     });
   });
   document.getElementById("hubcap-key-form").addEventListener("submit", updateHubcapApiKeySetting);
+  document.getElementById("ryuu2-cookie-form").addEventListener("submit", updateRyuu2CookieSetting);
 
   loadHubcapApiKeySetting();
+  loadRyuu2CookieSetting();
 }
 
 async function loadHubcapApiKeySetting() {
@@ -1081,6 +1170,61 @@ async function updateHubcapApiKeySetting(e) {
     input.value = "";
     toast("Hubcap API key saved successfully.", "success");
     loadHubcapApiKeySetting();
+  } catch (err) {
+    toast(err.message, "error");
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.classList.remove("loading");
+  }
+}
+
+async function loadRyuu2CookieSetting() {
+  const statusEl = document.getElementById("ryuu2-cookie-status");
+  const currentEl = document.getElementById("ryuu2-cookie-current");
+  const updatedEl = document.getElementById("ryuu2-cookie-updated");
+
+  statusEl.className = "badge expired";
+  statusEl.textContent = "Loading";
+  currentEl.textContent = "Loading...";
+  updatedEl.textContent = "—";
+
+  try {
+    const data = await apiFetch("/admin/settings/ryuu2-cookie");
+    statusEl.className = `badge ${data.configured ? "active" : "degraded"}`;
+    statusEl.textContent = data.configured ? "Configured" : "Missing";
+    currentEl.textContent = data.masked_value || "Not set";
+    updatedEl.textContent = data.updated_at ? formatDate(data.updated_at) : "Never changed";
+  } catch (err) {
+    statusEl.className = "badge degraded";
+    statusEl.textContent = "Error";
+    currentEl.textContent = err.message;
+  }
+}
+
+async function updateRyuu2CookieSetting(e) {
+  e.preventDefault();
+
+  const input = document.getElementById("ryuu2-cookie");
+  const submitBtn = document.getElementById("ryuu2-cookie-submit");
+  const cookie = input.value.trim();
+
+  if (!cookie) {
+    toast("Ryuu2 cookie is required.", "error");
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.classList.add("loading");
+
+  try {
+    await apiFetch("/admin/settings/ryuu2-cookie", {
+      method: "PUT",
+      body: JSON.stringify({ cookie }),
+    });
+
+    input.value = "";
+    toast("Ryuu2 cookie saved successfully.", "success");
+    loadRyuu2CookieSetting();
   } catch (err) {
     toast(err.message, "error");
   } finally {

@@ -23,10 +23,10 @@ export function formatUtcTimestamp(timestamp: string): string {
   return `${datePart} ${timePart}`;
 }
 
-type ManifestSource = 'hubcap' | 'manifesthub1' | 'sushi' | 'ryuu' | 'yaszz';
+type ManifestSource = 'hubcap' | 'manifesthub1' | 'sushi' | 'ryuu' | 'ryuu2' | 'yaszz';
 type SearchMode = 'title' | 'appid';
 
-const HIDDEN_SOURCE_OPTIONS = new Set<ManifestSource>(['manifesthub1', 'ryuu', 'sushi']);
+const HIDDEN_SOURCE_OPTIONS = new Set<ManifestSource>(['manifesthub1', 'ryuu', 'sushi', 'yaszz']);
 
 interface Game {
   game_name?: string;
@@ -85,13 +85,15 @@ function escHtml(str: string): string {
 function unavailableManifestMessage(currentSource: ManifestSource): string {
   switch (currentSource) {
     case 'sushi':
-      return 'Manifest not available from EkOp. Try another source; Ex: Hubcap.';
+      return 'Manifest not available from EkOp. Try another source; Ex: Jeffrey.';
     case 'ryuu':
-      return 'Manifest not available from TanJungHoo. Try another source; Ex: Hubcap.';
+      return 'Manifest not available from TanJungHoo. Try another source; Ex: Jeffrey.';
+    case 'ryuu2':
+      return 'Manifest not available from Jarwis. Try another source; Ex: Jeffrey.';
     case 'yaszz':
-      return 'Manifest not available from WoWo. Try another source; Ex: Hubcap.';
+      return 'Manifest not available from WoWo. Try another source; Ex: Jeffrey.';
     case 'manifesthub1':
-      return 'Invalid API key or manifest not available from DaRwiN. Try another source; Ex: Hubcap.';
+      return 'Invalid API key or manifest not available from DaRwiN. Try another source; Ex: Jeffrey.';
     case 'hubcap':
     default:
       return 'Manifest not available.';
@@ -128,7 +130,7 @@ const manifestCache: Partial<{
 export default function ManifestPage() {
   const [query, setQuery] = useState(() => manifestCache.query ?? '');
   const [searchMode, setSearchMode] = useState<SearchMode>(() => manifestCache.searchMode ?? 'title');
-  const [source, setSource] = useState<ManifestSource>(() => manifestCache.source ?? 'yaszz');
+  const [source, setSource] = useState<ManifestSource>(() => manifestCache.source ?? 'ryuu2');
   const [licenseToken, setLicenseToken] = useState(() => manifestCache.licenseToken ?? '');
   const [manifestHubApiKey, setManifestHubApiKey] = useState(() => manifestCache.manifestHubApiKey ?? '');
   const [tokenModalOpen, setTokenModalOpen] = useState(false);
@@ -462,6 +464,12 @@ export default function ManifestPage() {
       'TanJungHoo is a free manifest source that provides the latest game updates and DLC, but not as complete as Jeffrey.',
     requestText: 'Requesting manifest from TanJungHoo…',
   },
+  ryuu2: {
+    name: 'Ryuu2',
+    description:
+      'Jarwis is a free manifest source that provides the latest game updates and DLC, but not as complete as Jeffrey.',
+    requestText: 'Requesting manifest from Ryuu2…',
+  },
   yaszz: {
     name: 'WoWo',
     description:
@@ -516,6 +524,11 @@ export default function ManifestPage() {
                 value: 'sushi' as const,
                 title: 'EkOp',
                 subtitle: 'Free',
+              },
+              {
+                value: 'ryuu2' as const,
+                title: 'Jarwis',
+                subtitle: 'Good',
               },
               {
                 value: 'yaszz' as const,

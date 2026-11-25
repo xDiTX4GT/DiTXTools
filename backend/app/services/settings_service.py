@@ -6,6 +6,7 @@ from app.config import HUBCAP_APIKEY, DISCORD_GUILD_ID, DISCORD_BOT_TOKEN
 from app.models import AppSetting
 
 HUBCAP_API_KEY_SETTING = "hubcap_api_key"
+RYUU2_COOKIE_SETTING = "ryuu2_cookie"
 DISCORD_GUILD_ID_SETTING = "discord_guild_id"
 DISCORD_BOT_TOKEN_SETTING = "discord_bot_token"
 DISCORD_ALLOWED_CHANNELS_SETTING = "discord_allowed_channels"
@@ -35,6 +36,13 @@ def get_hubcap_api_key(db: Session) -> str | None:
         return setting.value
 
     return HUBCAP_APIKEY
+
+def get_ryuu2_cookie(db: Session) -> str | None:
+    setting = get_setting(db, RYUU2_COOKIE_SETTING)
+    if setting and setting.value:
+        return setting.value
+
+    return None
 
 def get_discord_config(db: Session) -> dict:
     guild_setting = get_setting(db, DISCORD_GUILD_ID_SETTING)

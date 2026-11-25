@@ -8,8 +8,8 @@ import zipfile
 import httpx
 from sqlalchemy.orm import Session
 
-from app.config import MANIFEST_PROVIDERS
-from app.services.settings_service import get_hubcap_api_key
+from app.config import MANIFEST_PROVIDERS, RYUU2_REFERER, RYUU2_USER_AGENT
+from app.services.settings_service import get_hubcap_api_key, get_ryuu2_cookie
 
 
 FIND_MANIFEST_URL = "https://fares.top/api/manifest"
@@ -231,6 +231,20 @@ async def fetch_manifest(
     if source == "hubcap":
         hubcap_api_key = get_hubcap_api_key(db)
         headers = {"Authorization": f"Bearer {hubcap_api_key}"}
+    elif source == "ryuu2":
+        ryuu2_cookie = get_ryuu2_cookie(db)
+        if not ryuu2_cookie:
+            return httpx.Response(
+                400,
+                content=b'{"detail":"Ryuu2 cookie is not configured."}',
+                headers={"Content-Type": "application/json"},
+            )
+
+        headers = {
+            "User-Agent": RYUU2_USER_AGENT,
+            "Cookie": ryuu2_cookie,
+            "Referer": RYUU2_REFERER,
+        }
     else:
         headers = provider["headers"](auth)
 

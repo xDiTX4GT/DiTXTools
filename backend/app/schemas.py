@@ -14,7 +14,7 @@ class TokenResponse(BaseModel):
 
 class ManifestDownloadRequest(BaseModel):
     app_id: int
-    source: Literal["hubcap", "manifesthub1", "sushi", "ryuu", "yaszz"] = "hubcap"
+    source: Literal["hubcap", "manifesthub1", "sushi", "ryuu", "ryuu2", "yaszz"] = "hubcap"
     token: str | None = None
     api_key: str | None = None
     game_name: str | None = None
@@ -44,6 +44,14 @@ class HubcapApiKeyResponse(BaseModel):
 
 class HubcapApiKeyUpdateRequest(BaseModel):
     api_key: str = Field(..., min_length=1)
+
+class Ryuu2CookieResponse(BaseModel):
+    configured: bool
+    masked_value: str | None = None
+    updated_at: datetime | None = None
+
+class Ryuu2CookieUpdateRequest(BaseModel):
+    cookie: str = Field(..., min_length=1)
 
 class TokenRequest(BaseModel):
     discord_id: str
