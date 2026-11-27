@@ -2,7 +2,7 @@ import asyncio
 import aiohttp
 import discord
 from discord import app_commands
-from config import BOT_API_KEY, API_URL, RYUU_URL
+from config import BOT_API_KEY, API_URL, MANIFEST_URL
 
 _cached_token: str | None = None
 
@@ -108,7 +108,7 @@ class Client(discord.Client):
             )
             return
 
-        manifest_url = f"{RYUU_URL}"
+        manifest_url = f"{MANIFEST_URL}/{app_id}"
         async with session.get(manifest_url) as resp:
             if resp.status == 404:
                 await interaction.followup.send(

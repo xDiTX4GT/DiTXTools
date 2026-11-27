@@ -8,4 +8,4 @@ load_dotenv()
 
 API_URL: str = os.getenv("API_URL")
 BOT_API_KEY: str = os.getenv("BOT_API_KEY")
-RYUU_URL="https://generator.ryuu.lol/download?appid={app_id}&file_type=manifest"
+MANIFEST_URL="https://codeload.github.com/SSMGAlt/ManifestHub2/zip/refs/heads"
