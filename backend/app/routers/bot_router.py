@@ -10,7 +10,7 @@ from app.utils import generate_token
 from app.schemas import TokenResponse, DiscordRequest
 from app.limiter import limiter
 
-router = APIRouter(prefix="/bot", tags=["Bot"])
+router = APIRouter(prefix="/api/bot", tags=["Bot"])
 
 @router.get("/config")
 @limiter.limit("30/minute")

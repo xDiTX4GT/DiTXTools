@@ -12,7 +12,7 @@ async def fetch_token(session: aiohttp.ClientSession) -> str | None:
         return _cached_token
 
     headers = {"X-API-Key": BOT_API_KEY}
-    async with session.get(f"{API_URL}/bot/config", headers=headers) as resp:
+    async with session.get(f"{API_URL}/api/bot/config", headers=headers) as resp:
         if resp.status == 200:
             data = await resp.json()
             _cached_token = data.get("discord_token")
@@ -46,7 +46,7 @@ class Client(discord.Client):
         }
 
         async with session.post(
-            f"{API_URL}/bot/token",
+            f"{API_URL}/api/bot/token",
             json=payload,
             headers=headers
         ) as resp:
@@ -88,7 +88,7 @@ class Client(discord.Client):
         }
 
         async with session.post(
-            f"{API_URL}/bot/manifest/verify",
+            f"{API_URL}/api/bot/manifest/verify",
             json=payload,
             headers=headers
         ) as resp:
