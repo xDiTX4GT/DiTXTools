@@ -141,7 +141,7 @@ class Client(discord.Client):
         headers = {"X-API-Key": BOT_API_KEY}
 
         async with session.get(
-            f"{API_URL}/health",
+            f"{API_URL}/api/health",
             headers=headers
         ) as resp:
             data = await resp.json()
