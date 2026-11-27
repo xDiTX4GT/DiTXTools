@@ -108,7 +108,7 @@ class Client(discord.Client):
             )
             return
 
-        manifest_url = f"{RYUU_URL}/{app_id}"
+        manifest_url = f"{RYUU_URL}"
         async with session.get(manifest_url) as resp:
             if resp.status == 404:
                 await interaction.followup.send(
